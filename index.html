@@ -12,22 +12,27 @@
 <body>
     <div id="loginTela">
 
-        <div class="loginBox">
+  <div class="loginBox">
 
-        <h2>🔒 Acesso Restrito</h2>
+    <h2 id="tituloLogin">
+      🔒 Login
+    </h2>
 
-        <input
-            type="password"
-            id="senhaLogin"
-            placeholder="Digite a senha"
-            onkeydown="enterLogin(event)"
-            >
+    <input
+      type="password"
+      id="senhaLogin"
+      placeholder="Digite a senha"
+      onkeydown="enterLogin(event)"
+    >
 
-        <button onclick="fazerLogin()">Entrar</button>
+    <button onclick="fazerLogin()">
+      Entrar
+    </button>
 
-        </div>
+  </div>
 
-    </div>
+</div>
+
     <div id="sistema" style="display:none;">
 
         <div class="resumo">
@@ -46,6 +51,10 @@
                 📒 Empréstimos Ativos<br>
                 <span id="totalAtivos">0</span>
             </div>
+            <div class="cardResumo">
+                 💵 Total Recebido: R$ <span id="totalRecebido">0.00</span>
+            </div>
+            
             <button onclick="fazerBackup()">💾 Backup</button>
 
         </div>
@@ -64,9 +73,9 @@
 
             <input type="number" id="periodo" placeholder="Período em dias">
 
-            <button onclick="adicionarEmprestimo()">
-                + Adicionar Empréstimo
-            </button>
+            <input type="text" id="garantia" placeholder="Garantia">
+
+            <button onclick="adicionarEmprestimo()"> + Adicionar Empréstimo </button>
 
         </div>
 

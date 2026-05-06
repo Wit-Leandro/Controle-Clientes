@@ -3,6 +3,8 @@
 
 let emprestimos = [];
 
+let totalRecebido = 0;
+
 /* ================= STORAGE ================= */
 
 function salvarDados() {
@@ -11,6 +13,10 @@ function salvarDados() {
         "emprestimos",
         JSON.stringify(emprestimos)
     );
+    localStorage.setItem(
+        "totalRecebido",
+        totalRecebido
+);
 }
 
 function carregarDados() {
@@ -22,6 +28,11 @@ function carregarDados() {
 
         emprestimos = JSON.parse(dados);
     }
+    const tr =
+        localStorage.getItem("totalRecebido");
+
+    if(tr)
+        totalRecebido = parseFloat(tr);
 }
 
 /* ================= DATA ================= */
@@ -93,6 +104,8 @@ function atualizarResumo() {
 
     document.getElementById("totalAtivos")
         .innerText = ativos;
+    
+    document.getElementById("totalRecebido").innerText = totalRecebido.toFixed(2);    
 }
 
 /* ================= ADICIONAR ================= */
@@ -116,6 +129,9 @@ function adicionarEmprestimo() {
     let periodo = parseInt(
         document.getElementById("periodo").value
     );
+
+    let garantia =
+        document.getElementById("garantia").value;
 
     if (
         !nome ||
@@ -150,6 +166,8 @@ function adicionarEmprestimo() {
 
         vencimento: vencimento,
 
+        garantia:garantia,
+
         pago: false, historicoJuros: []
 
     });
@@ -176,13 +194,31 @@ function limparCampos() {
 
 /* ================= PAGAMENTO ================= */
 
-function marcarPago(index) {
+function marcarPago(index){
 
-    emprestimos[index].pago = true;
+  let e = emprestimos[index];
 
-    salvarDados();
+  // evita duplicidade
 
-    renderizar();
+  if(e.pago){
+
+    alert("Empréstimo já foi pago");
+
+    return;
+  }
+
+  // soma no total recebido
+
+  totalRecebido +=
+    parseFloat(e.valorReceber);
+
+  // marca como pago
+
+  e.pago = true;
+
+  salvarDados();
+
+  renderizar();
 }
 
 /* ================= REMOVER ================= */
@@ -314,6 +350,11 @@ function renderizar(){
         </div>
 
         <div class="info">
+            🔒 Garantia:
+            ${e.garantia || "-"}
+        </div>
+
+        <div class="info">
           📈 Juros:
           ${e.juros}%
         </div>
@@ -430,8 +471,6 @@ function restaurarBackup(event) {
     reader.readAsText(arquivo);
 }
 
-
-
 function pagarJuros(index){
 
   let e = emprestimos[index];
@@ -458,7 +497,7 @@ function pagarJuros(index){
 
     parseFloat(e.valor);
 
-  // salva pagamento juros
+  // salva histórico
 
   e.historicoJuros.push({
 
@@ -468,7 +507,11 @@ function pagarJuros(index){
 
   });
 
-  // adiciona novo prazo
+  // soma no total recebido
+
+  totalRecebido += valorJuros;
+
+  // novo vencimento
 
   let novaData =
     new Date(e.vencimento);
@@ -524,32 +567,90 @@ function toggleFormulario(){
 }
 const SENHA_APP = "1234";
 
-function fazerLogin(){
 
-  const senha =
-    document.getElementById("senhaLogin").value;
-
-  if(senha === SENHA_APP){
-
-    document
-      .getElementById("loginTela")
-      .style.display = "none";
-
-    document
-      .getElementById("sistema")
-      .style.display = "block";
-
-  }else{
-
-    alert("Senha incorreta");
-  }
-}
 function enterLogin(event){
 
   if(event.key === "Enter"){
 
     fazerLogin();
   }
+}
+
+function fazerLogin(){
+
+  const senha =
+    document.getElementById("senhaLogin").value;
+
+  // senha salva
+
+  let senhaSalva =
+    localStorage.getItem("senhaSistema");
+
+  // PRIMEIRO ACESSO
+
+  if(!senhaSalva){
+
+    if(senha.length < 4){
+
+      alert(
+        "Crie uma senha com pelo menos 4 números"
+      );
+
+      return;
+    }
+
+    localStorage.setItem(
+      "senhaSistema",
+      senha
+    );
+
+    alert("Senha criada com sucesso!");
+
+    abrirSistema();
+
+    return;
+  }
+
+  // LOGIN NORMAL
+
+  if(senha === senhaSalva){
+
+    abrirSistema();
+
+  }else{
+
+    alert("Senha incorreta");
+  }
+}
+
+function abrirSistema(){
+
+  document
+    .getElementById("loginTela")
+    .style.display = "none";
+
+  document
+    .getElementById("sistema")
+    .style.display = "block";
+}
+
+function enterLogin(event){
+
+  if(event.key === "Enter"){
+
+    fazerLogin();
+  }
+}
+
+const senhaExiste =
+  localStorage.getItem("senhaSistema");
+
+if(!senhaExiste){
+
+  document
+    .getElementById("tituloLogin")
+    .innerText =
+    "🔑 Crie sua senha";
 }
 
 /* ================= INIT ================= */
