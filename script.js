@@ -125,8 +125,6 @@ function adicionarEmprestimo() {
         !periodo
     ) {
 
-        alert("Preencha todos os campos");
-
         return;
     }
 
@@ -152,7 +150,7 @@ function adicionarEmprestimo() {
 
         vencimento: vencimento,
 
-        pago: false
+        pago: false, historicoJuros: []
 
     });
 
@@ -203,93 +201,101 @@ function remover(index) {
 
 /* ================= RENDER ================= */
 
-function renderizar() {
-
-    const lista =
-        document.getElementById("listaClientes");
-
-    lista.innerHTML = "";
-    [...emprestimos]
-
-        .sort((a, b) => {
-
-            const diasA =
-                diasRestantes(a.vencimento);
-
-            const diasB =
-                diasRestantes(b.vencimento);
-
-            // PAGOS ficam por último
-
-            if (a.pago && !b.pago) return 1;
-            if (!a.pago && b.pago) return -1;
-
-            // ATRASADOS primeiro
-
-            if (diasA < 0 && diasB >= 0) return -1;
-            if (diasA >= 0 && diasB < 0) return 1;
-
-            // VENCE HOJE antes dos demais
-
-            if (diasA === 0 && diasB > 0) return -1;
-            if (diasA > 0 && diasB === 0) return 1;
-
-            // MAIS RECENTES primeiro
-
-            return new Date(b.data) - new Date(a.data);
-
-        })
-
-        .forEach((e, revIndex) => {
 
 
+function renderizar(){
 
-            const index =
-                emprestimos.length - 1 - revIndex;
+  const lista =
+    document.getElementById("listaClientes");
 
-            const dias =
-                diasRestantes(e.vencimento);
+  lista.innerHTML = "";
 
-            let classe = "";
+  [...emprestimos]
 
-            let status = "";
+  .sort((a,b)=>{
 
-            if (e.pago) {
+    const diasA =
+      diasRestantes(a.vencimento);
 
-                classe = "pago";
+    const diasB =
+      diasRestantes(b.vencimento);
 
-                status =
-                    `<div class="status emDia">
+    // PAGOS ficam por último
+
+    if(a.pago && !b.pago) return 1;
+    if(!a.pago && b.pago) return -1;
+
+    // ATRASADOS primeiro
+
+    if(diasA < 0 && diasB >= 0) return -1;
+    if(diasA >= 0 && diasB < 0) return 1;
+
+    // VENCE HOJE antes dos demais
+
+    if(diasA === 0 && diasB > 0) return -1;
+    if(diasA > 0 && diasB === 0) return 1;
+
+    // MAIS RECENTES primeiro
+
+    return new Date(b.data) - new Date(a.data);
+
+  })
+
+  .forEach((e,revIndex)=>{
+
+    // CORREÇÃO PARA DADOS ANTIGOS
+
+    if(!e.historicoJuros){
+
+      e.historicoJuros = [];
+    }
+
+    const index =
+      emprestimos.indexOf(e);
+
+    const dias =
+      diasRestantes(e.vencimento);
+
+    let classe = "";
+
+    let status = "";
+
+    if(e.pago){
+
+      classe = "pago";
+
+      status =
+        `<div class="status emDia">
           ✅ Pago
         </div>`;
 
-            } else if (dias === 0) {
+    }else if(dias === 0){
 
-                classe = "vencendoHoje";
+      classe = "vencendoHoje";
 
-                status =
-                    `<div class="status atrasado">
+      status =
+        `<div class="status atrasado">
           ⚠️ Vence Hoje
         </div>`;
 
-            } else if (dias < 0) {
+    }else if(dias < 0){
 
-                classe = "vencendoHoje";
+      classe = "vencendoHoje";
 
-                status =
-                    `<div class="status atrasado">
+      status =
+        `<div class="status atrasado">
           🔴 Atrasado ${Math.abs(dias)} dia(s)
         </div>`;
 
-            } else {
+    }else{
 
-                status =
-                    `<div class="status emDia">
+      status =
+        `<div class="status emDia">
           🟢 ${dias} dia(s) restantes
         </div>`;
-            }
+    }
 
-            lista.innerHTML += `
+    lista.innerHTML += `
 
       <div class="cliente ${classe}">
 
@@ -327,9 +333,22 @@ function renderizar() {
           ${formatarData(e.vencimento)}
         </div>
 
+        <div class="info">
+          💸 Juros pagos:
+          ${(e.historicoJuros || []).length}
+        </div>
+
         ${status}
 
         <div class="botoes">
+
+          <button
+            class="btnJuros"
+            onclick="pagarJuros(${index})">
+
+            Pagou Juros
+
+          </button>
 
           <button
             class="btnPago"
@@ -352,63 +371,185 @@ function renderizar() {
       </div>
 
     `;
-        });
+  });
 
-    atualizarResumo();
+  atualizarResumo();
 }
 
-function fazerBackup(){
+function fazerBackup() {
 
-  const dados = {
+    const dados = {
 
-    emprestimos: emprestimos
+        emprestimos: emprestimos
 
-  };
+    };
 
-  const blob = new Blob(
+    const blob = new Blob(
 
-    [JSON.stringify(dados,null,2)],
+        [JSON.stringify(dados, null, 2)],
 
-    { type:"application/json" }
+        { type: "application/json" }
+
+    );
+
+    const a =
+        document.createElement("a");
+
+    a.href =
+        URL.createObjectURL(blob);
+
+    a.download =
+        "backup_emprestimos.json";
+
+    a.click();
+}
+function restaurarBackup(event) {
+
+    const arquivo =
+        event.target.files[0];
+
+    if (!arquivo) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        const dados =
+            JSON.parse(e.target.result);
+
+        emprestimos =
+            dados.emprestimos || [];
+
+        salvarDados();
+
+        renderizar();
+
+        alert("Backup restaurado!");
+    };
+
+    reader.readAsText(arquivo);
+}
+
+
+
+function pagarJuros(index){
+
+  let e = emprestimos[index];
+
+  if(e.pago){
+
+    alert("Empréstimo já quitado");
+
+    return;
+  }
+
+  // cria histórico caso não exista
+
+  if(!e.historicoJuros){
+
+    e.historicoJuros = [];
+  }
+
+  // calcula juros
+
+  let valorJuros =
+
+    parseFloat(e.valorReceber) -
+
+    parseFloat(e.valor);
+
+  // salva pagamento juros
+
+  e.historicoJuros.push({
+
+    data:new Date().toLocaleString(),
+
+    valor:valorJuros
+
+  });
+
+  // adiciona novo prazo
+
+  let novaData =
+    new Date(e.vencimento);
+
+  novaData.setDate(
+
+    novaData.getDate() +
+
+    parseInt(e.periodo)
 
   );
 
-  const a =
-    document.createElement("a");
+  e.vencimento = novaData;
 
-  a.href =
-    URL.createObjectURL(blob);
+  salvarDados();
 
-  a.download =
-    "backup_emprestimos.json";
+  renderizar();
 
-  a.click();
+  alert(
+
+    "Juros pagos com sucesso!\n\n" +
+
+    "Novo vencimento: " +
+
+    formatarData(novaData)
+
+  );
 }
-function restaurarBackup(event){
 
-  const arquivo =
-    event.target.files[0];
+function toggleFormulario(){
 
-  if(!arquivo) return;
+  const form =
+    document.getElementById("formulario");
 
-  const reader = new FileReader();
+  const btn =
+    document.getElementById("btnNovo");
 
-  reader.onload = function(e){
+  if(form.style.display === "none"){
 
-    const dados =
-      JSON.parse(e.target.result);
+    form.style.display = "block";
 
-    emprestimos =
-      dados.emprestimos || [];
+    btn.innerText =
+      "Fechar Formulário";
 
-    salvarDados();
+  }else{
 
-    renderizar();
+    form.style.display = "none";
 
-    alert("Backup restaurado!");
-  };
+    btn.innerText =
+      "+ Novo Empréstimo";
+  }
+  adicionarEmprestimo()
+}
+const SENHA_APP = "1234";
 
-  reader.readAsText(arquivo);
+function fazerLogin(){
+
+  const senha =
+    document.getElementById("senhaLogin").value;
+
+  if(senha === SENHA_APP){
+
+    document
+      .getElementById("loginTela")
+      .style.display = "none";
+
+    document
+      .getElementById("sistema")
+      .style.display = "block";
+
+  }else{
+
+    alert("Senha incorreta");
+  }
+}
+function enterLogin(event){
+
+  if(event.key === "Enter"){
+
+    fazerLogin();
+  }
 }
 
 /* ================= INIT ================= */
@@ -416,5 +557,7 @@ function restaurarBackup(event){
 carregarDados();
 
 renderizar();
+
+toggleFormulario();
 
 

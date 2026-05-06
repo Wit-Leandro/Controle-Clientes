@@ -1,0 +1,47 @@
+O programa permite cadastrar empréstimos informando:
+
+nome do cliente;
+data do empréstimo;
+valor emprestado;
+percentual de juros;
+prazo em dias para pagamento.
+
+Com base nessas informações, o sistema calcula automaticamente:
+
+valor total a receber;
+data de vencimento;
+quantidade de dias restantes para pagamento;
+situação do empréstimo.
+
+A tela principal exibe um painel resumo contendo:
+
+valor total emprestado;
+valor total a receber;
+quantidade de empréstimos ativos.
+
+Os clientes ficam organizados em cartões individuais contendo todas as informações do empréstimo, incluindo:
+
+valor original;
+juros aplicados;
+valor final;
+prazo;
+vencimento;
+status atual.
+
+O sistema possui destaque automático para cobranças:
+
+empréstimos atrasados aparecem no topo da lista;
+empréstimos com vencimento no dia ficam destacados visualmente;
+clientes em dia permanecem organizados abaixo;
+empréstimos pagos ficam separados no final da listagem.
+
+Também é possível:
+
+marcar empréstimos como pagos;
+remover registros;
+manter histórico permanente dos lançamentos;
+salvar automaticamente os dados no navegador;
+gerar backup completo em arquivo JSON;
+restaurar backups posteriormente.
+
+O histórico permanece salvo mesmo após fechar o navegador, permitindo continuidade no controle financeiro sem perda de informações.

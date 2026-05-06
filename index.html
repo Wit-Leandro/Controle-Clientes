@@ -10,51 +10,68 @@
 </head>
 
 <body>
+    <div id="loginTela">
 
-    <h1>💰 Controle de Empréstimos</h1>
-    <br>
-    <span>Restaure o backup usando o mesmo arquivo backup_emprestimos.json</span>
-    <input type="file" id="restaurarArquivo" accept=".json" onchange="restaurarBackup(event)">
-    <br>
-    <div class="resumo">
+        <div class="loginBox">
 
-        <div class="cardResumo">
-            💵 Total Emprestado<br>
-            R$ <span id="totalEmprestado">0.00</span>
+        <h2>🔒 Acesso Restrito</h2>
+
+        <input
+            type="password"
+            id="senhaLogin"
+            placeholder="Digite a senha"
+            onkeydown="enterLogin(event)"
+            >
+
+        <button onclick="fazerLogin()">Entrar</button>
+
         </div>
-
-        <div class="cardResumo">
-            🏦 Total a Receber<br>
-            R$ <span id="totalReceber">0.00</span>
-        </div>
-
-        <div class="cardResumo">
-            📒 Empréstimos Ativos<br>
-            <span id="totalAtivos">0</span>
-        </div>
-        <button onclick="fazerBackup()">💾 Backup</button>
 
     </div>
+    <div id="sistema" style="display:none;">
 
-    <div class="formulario">
+        <div class="resumo">
 
-        <input type="text" id="nome" placeholder="Nome do cliente">
+            <div class="cardResumo">
+                💵 Total Emprestado<br>
+                R$ <span id="totalEmprestado">0.00</span>
+            </div>
 
-        <input type="date" id="data">
+            <div class="cardResumo">
+                🏦 Total a Receber<br>
+                R$ <span id="totalReceber">0.00</span>
+            </div>
 
-        <input type="number" id="valor" placeholder="Valor emprestado">
+            <div class="cardResumo">
+                📒 Empréstimos Ativos<br>
+                <span id="totalAtivos">0</span>
+            </div>
+            <button onclick="fazerBackup()">💾 Backup</button>
 
-        <input type="number" id="juros" placeholder="Juros % (ex: 30)">
+        </div>
+        <span>Restaurar backup: </span><input type="file" id="restaurarArquivo" accept=".json" onchange="restaurarBackup(event)">
+        <button id="btnNovo" onclick="toggleFormulario()"> + Novo Empréstimo</button>
 
-        <input type="number" id="periodo" placeholder="Período em dias">
+        <div class="formulario" id="formulario" style="display:none;">
 
-        <button onclick="adicionarEmprestimo()">
-            + Adicionar Empréstimo
-        </button>
+            <input type="text" id="nome" placeholder="Nome do cliente">
 
-    </div>
+            <input type="date" id="data">
 
-    <div class="lista" id="listaClientes"></div>
+            <input type="number" id="valor" placeholder="Valor emprestado">
+
+            <input type="number" id="juros" placeholder="Juros % (ex: 30)">
+
+            <input type="number" id="periodo" placeholder="Período em dias">
+
+            <button onclick="adicionarEmprestimo()">
+                + Adicionar Empréstimo
+            </button>
+
+        </div>
+
+        <div class="lista" id="listaClientes"></div>
+    </div>    
     <script src="script.js"></script>
 </body>
 
