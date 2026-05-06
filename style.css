@@ -238,3 +238,29 @@ input {
 
   cursor:pointer;
 }
+
+.acoesBackup{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:15px;
+
+  flex-wrap:wrap;
+
+  margin-bottom:15px;
+}
+
+.arquivoBackup{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  flex-wrap:wrap;
+}

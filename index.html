@@ -58,7 +58,20 @@
             <button onclick="fazerBackup()">💾 Backup</button>
 
         </div>
-        <span>Restaurar backup: </span><input type="file" id="restaurarArquivo" accept=".json" onchange="restaurarBackup(event)">
+
+        <div class="acoesBackup"> 
+
+            <div class="arquivoBackup">
+
+            <span>Restaurar backup:</span>
+
+            <input type="file" id="restaurarArquivo" accept=".json" onchange="restaurarBackup(event)">
+
+            </div>
+
+        <button class="btnLimpar" onclick="limparDados()"> 🗑 Limpar Dados </button>
+
+        </div>
         <button id="btnNovo" onclick="toggleFormulario()"> + Novo Empréstimo</button>
 
         <div class="formulario" id="formulario" style="display:none;">

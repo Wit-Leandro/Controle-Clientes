@@ -193,7 +193,7 @@ function limparCampos() {
 }
 
 /* ================= PAGAMENTO ================= */
-
+/*
 function marcarPago(index){
 
   let e = emprestimos[index];
@@ -220,9 +220,41 @@ function marcarPago(index){
 
   renderizar();
 }
+*/
+function marcarPago(index){
 
+  if(!confirm(
+    "Confirmar quitação do empréstimo?"
+  )){
+    return;
+  }
+
+  let e = emprestimos[index];
+
+  // evita duplicidade
+
+  if(e.pago){
+
+    alert("Empréstimo já foi pago");
+
+    return;
+  }
+
+  // soma recebido
+
+  totalRecebido +=
+    parseFloat(e.valorReceber);
+
+  // marca pago
+
+  e.pago = true;
+
+  salvarDados();
+
+  renderizar();
+}
 /* ================= REMOVER ================= */
-
+/*
 function remover(index) {
 
     if (confirm("Remover empréstimo?")) {
@@ -234,7 +266,21 @@ function remover(index) {
         renderizar();
     }
 }
+*/
+function remover(index){
 
+  if(!confirm(
+    "Deseja realmente remover este empréstimo?"
+  )){
+    return;
+  }
+
+  emprestimos.splice(index,1);
+
+  salvarDados();
+
+  renderizar();
+}
 /* ================= RENDER ================= */
 
 
@@ -470,7 +516,7 @@ function restaurarBackup(event) {
 
     reader.readAsText(arquivo);
 }
-
+/*
 function pagarJuros(index){
 
   let e = emprestimos[index];
@@ -481,7 +527,14 @@ function pagarJuros(index){
 
     return;
   }
+*/
+function pagarJuros(index){
 
+  if(!confirm(
+    "Confirmar pagamento dos juros?"
+  )){
+    return;
+  }
   // cria histórico caso não exista
 
   if(!e.historicoJuros){
@@ -653,6 +706,51 @@ if(!senhaExiste){
     "🔑 Crie sua senha";
 }
 
+function limparDados(){
+
+  const senha =
+    prompt(
+      "Digite sua senha para apagar os dados:"
+    );
+
+  // senha salva
+
+  const senhaSalva =
+    localStorage.getItem("senhaSistema");
+
+  if(senha !== senhaSalva){
+
+    alert("Senha incorreta");
+
+    return;
+  }
+
+  if(!confirm(
+    "TODOS os empréstimos serão apagados.\n\nContinuar?"
+  )){
+    return;
+  }
+
+  // limpa apenas os dados do sistema
+
+  emprestimos = [];
+
+  totalRecebido = 0;
+
+  // remove apenas dados específicos
+
+  localStorage.removeItem("emprestimos");
+
+  localStorage.removeItem("totalRecebido");
+
+  salvarDados();
+
+  renderizar();
+
+  atualizarResumo();
+
+  alert("Dados apagados com sucesso!");
+}
 /* ================= INIT ================= */
 
 carregarDados();
