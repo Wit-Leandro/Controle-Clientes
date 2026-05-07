@@ -254,25 +254,43 @@ function marcarPago(index){
   renderizar();
 }
 /* ================= REMOVER ================= */
-/*
-function remover(index) {
 
-    if (confirm("Remover empréstimo?")) {
 
-        emprestimos.splice(index, 1);
-
-        salvarDados();
-
-        renderizar();
-    }
-}
-*/
 function remover(index){
 
   if(!confirm(
     "Deseja realmente remover este empréstimo?"
   )){
     return;
+  }
+
+  let e = emprestimos[index];
+
+  // se estava pago remove do total recebido
+
+  if(e.pago){
+
+    totalRecebido -=
+      parseFloat(e.valorReceber);
+  }
+
+  // remove juros pagos do total recebido
+
+  if(e.historicoJuros){
+
+    e.historicoJuros.forEach(j=>{
+
+      totalRecebido -=
+        parseFloat(j.valor);
+
+    });
+  }
+
+  // evita negativo
+
+  if(totalRecebido < 0){
+
+    totalRecebido = 0;
   }
 
   emprestimos.splice(index,1);
@@ -528,6 +546,7 @@ function pagarJuros(index){
     return;
   }
 */
+
 function pagarJuros(index){
 
   if(!confirm(
@@ -535,6 +554,20 @@ function pagarJuros(index){
   )){
     return;
   }
+
+  // pega empréstimo
+
+  let e = emprestimos[index];
+
+  // verifica se já foi pago
+
+  if(e.pago){
+
+    alert("Empréstimo já quitado");
+
+    return;
+  }
+
   // cria histórico caso não exista
 
   if(!e.historicoJuros){
@@ -564,10 +597,12 @@ function pagarJuros(index){
 
   totalRecebido += valorJuros;
 
-  // novo vencimento
+  // pega vencimento atual
 
   let novaData =
     new Date(e.vencimento);
+
+  // adiciona mais dias
 
   novaData.setDate(
 
@@ -576,6 +611,8 @@ function pagarJuros(index){
     parseInt(e.periodo)
 
   );
+
+  // salva novo vencimento
 
   e.vencimento = novaData;
 
