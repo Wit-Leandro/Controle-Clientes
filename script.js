@@ -9,187 +9,204 @@ let totalRecebido = 0;
 
 function salvarDados() {
 
-    localStorage.setItem(
-        "emprestimos",
-        JSON.stringify(emprestimos)
-    );
-    localStorage.setItem(
-        "totalRecebido",
-        totalRecebido
-);
+  localStorage.setItem(
+    "emprestimos",
+    JSON.stringify(emprestimos)
+  );
+  localStorage.setItem(
+    "totalRecebido",
+    totalRecebido
+  );
 }
 
 function carregarDados() {
 
-    const dados =
-        localStorage.getItem("emprestimos");
+  const dados =
+    localStorage.getItem("emprestimos");
 
-    if (dados) {
+  if (dados) {
 
-        emprestimos = JSON.parse(dados);
-    }
-    const tr =
-        localStorage.getItem("totalRecebido");
+    emprestimos = JSON.parse(dados);
+  }
+  const tr =
+    localStorage.getItem("totalRecebido");
 
-    if(tr)
-        totalRecebido = parseFloat(tr);
+  if (tr)
+    totalRecebido = parseFloat(tr);
 }
 
 /* ================= DATA ================= */
 
 function formatarData(data) {
 
-    return new Date(data)
-        .toLocaleDateString("pt-BR");
+  return new Date(data)
+    .toLocaleDateString("pt-BR");
 }
 
 function calcularVencimento(data, dias) {
 
-    let nova = new Date(data);
+  let nova = new Date(data);
 
-    nova.setDate(
-        nova.getDate() + parseInt(dias)
-    );
+  nova.setDate(
+    nova.getDate() + parseInt(dias)
+  );
 
-    return nova;
+  return nova;
 }
 
 function diasRestantes(data) {
 
-    const hoje = new Date();
+  const hoje = new Date();
 
-    hoje.setHours(0, 0, 0, 0);
+  hoje.setHours(0, 0, 0, 0);
 
-    const venc = new Date(data);
+  const venc = new Date(data);
 
-    venc.setHours(0, 0, 0, 0);
+  venc.setHours(0, 0, 0, 0);
 
-    const diff =
-        venc - hoje;
+  const diff =
+    venc - hoje;
 
-    return Math.ceil(
-        diff / (1000 * 60 * 60 * 24)
-    );
+  return Math.ceil(
+    diff / (1000 * 60 * 60 * 24)
+  );
 }
 
 /* ================= RESUMO ================= */
 
 function atualizarResumo() {
 
-    let totalEmprestado = 0;
+  let totalEmprestado = 0;
 
-    let totalReceber = 0;
+  let totalReceber = 0;
 
-    let ativos = 0;
+  let ativos = 0;
 
-    emprestimos.forEach(e => {
+  emprestimos.forEach(e => {
 
-        if (!e.pago) {
+    if (!e.pago) {
 
-            totalEmprestado += parseFloat(e.valor);
+      totalEmprestado += parseFloat(e.valor);
 
-            totalReceber += parseFloat(e.valorReceber);
+      totalReceber += parseFloat(e.valorReceber);
 
-            ativos++;
-        }
-    });
+      ativos++;
+    }
+  });
 
-    document.getElementById("totalEmprestado")
-        .innerText =
-        totalEmprestado.toFixed(2);
+  document.getElementById("totalEmprestado")
+    .innerText =
+    totalEmprestado.toFixed(2);
 
-    document.getElementById("totalReceber")
-        .innerText =
-        totalReceber.toFixed(2);
+  document.getElementById("totalReceber")
+    .innerText =
+    totalReceber.toFixed(2);
 
-    document.getElementById("totalAtivos")
-        .innerText = ativos;
-    
-    document.getElementById("totalRecebido").innerText = totalRecebido.toFixed(2);    
+  document.getElementById("totalAtivos")
+    .innerText = ativos;
+
+  document.getElementById("totalRecebido").innerText = totalRecebido.toFixed(2);
 }
 
 /* ================= ADICIONAR ================= */
 
-function adicionarEmprestimo() {
+function adicionarEmprestimo(){
 
-    let nome =
-        document.getElementById("nome").value;
+  let nome =
+    document.getElementById("nome").value;
 
-    let data =
-        document.getElementById("data").value;
+  let data =
+    document.getElementById("data").value;
 
-    let valor = parseFloat(
-        document.getElementById("valor").value
+  let valor =
+    parseFloat(
+      document.getElementById("valor").value
     );
 
-    let juros = parseFloat(
-        document.getElementById("juros").value
+  let juros =
+    parseFloat(
+      document.getElementById("juros").value
     );
 
-    let periodo = parseInt(
-        document.getElementById("periodo").value
-    );
+  let vencimento =
+    document.getElementById("vencimento").value;
 
-    let garantia =
-        document.getElementById("garantia").value;
+  let garantia =
+    document.getElementById("garantia").value;
 
-    if (
-        !nome ||
-        !data ||
-        !valor ||
-        !juros ||
-        !periodo
-    ) {
+  if(
+    !nome ||
+    !data ||
+    !valor ||
+    !juros ||
+    !vencimento
+  ){
 
-        return;
-    }
+    alert("Preencha todos os campos");
 
-    let valorReceber =
-        valor + (valor * juros / 100);
+    return;
+  }
 
-    let vencimento =
-        calcularVencimento(data, periodo);
+  let valorReceber =
 
-    emprestimos.push({
+    valor +
 
-        nome: nome,
+    (valor * juros / 100);
 
-        data: data,
+  emprestimos.push({
 
-        valor: valor,
+    nome:nome,
 
-        juros: juros,
+    data:data,
 
-        periodo: periodo,
+    valor:valor,
 
-        valorReceber: valorReceber,
+    juros:juros,
 
-        vencimento: vencimento,
+    vencimento:vencimento,
 
-        garantia:garantia,
+    valorReceber:valorReceber,
 
-        pago: false, historicoJuros: []
+    garantia:garantia,
 
-    });
+    pago:false,
 
-    salvarDados();
+    historicoJuros:[]
 
-    renderizar();
+  });
 
-    limparCampos();
+  salvarDados();
+
+  renderizar();
+
+  // limpa campos
+
+  document.getElementById("nome").value = "";
+
+  document.getElementById("data").value = "";
+
+  document.getElementById("valor").value = "";
+
+  document.getElementById("juros").value = "";
+
+  document.getElementById("vencimento").value = "";
+
+  document.getElementById("garantia").value = "";
 }
+
+
 
 /* ================= LIMPAR ================= */
 
 function limparCampos() {
 
-    document.getElementById("nome").value = "";
+  document.getElementById("nome").value = "";
 
-    document.getElementById("valor").value = "";
+  document.getElementById("valor").value = "";
 
-    document.getElementById("juros").value = "";
+  document.getElementById("juros").value = "";
 
-    document.getElementById("periodo").value = "";
+  document.getElementById("periodo").value = "";
 }
 
 /* ================= PAGAMENTO ================= */
@@ -221,11 +238,11 @@ function marcarPago(index){
   renderizar();
 }
 */
-function marcarPago(index){
+function marcarPago(index) {
 
-  if(!confirm(
+  if (!confirm(
     "Confirmar quitação do empréstimo?"
-  )){
+  )) {
     return;
   }
 
@@ -233,7 +250,7 @@ function marcarPago(index){
 
   // evita duplicidade
 
-  if(e.pago){
+  if (e.pago) {
 
     alert("Empréstimo já foi pago");
 
@@ -256,11 +273,11 @@ function marcarPago(index){
 /* ================= REMOVER ================= */
 
 
-function remover(index){
+function remover(index) {
 
-  if(!confirm(
+  if (!confirm(
     "Deseja realmente remover este empréstimo?"
-  )){
+  )) {
     return;
   }
 
@@ -268,7 +285,7 @@ function remover(index){
 
   // se estava pago remove do total recebido
 
-  if(e.pago){
+  if (e.pago) {
 
     totalRecebido -=
       parseFloat(e.valorReceber);
@@ -276,9 +293,9 @@ function remover(index){
 
   // remove juros pagos do total recebido
 
-  if(e.historicoJuros){
+  if (e.historicoJuros) {
 
-    e.historicoJuros.forEach(j=>{
+    e.historicoJuros.forEach(j => {
 
       totalRecebido -=
         parseFloat(j.valor);
@@ -288,12 +305,12 @@ function remover(index){
 
   // evita negativo
 
-  if(totalRecebido < 0){
+  if (totalRecebido < 0) {
 
     totalRecebido = 0;
   }
 
-  emprestimos.splice(index,1);
+  emprestimos.splice(index, 1);
 
   salvarDados();
 
@@ -303,7 +320,7 @@ function remover(index){
 
 
 
-function renderizar(){
+function renderizar() {
 
   const lista =
     document.getElementById("listaClientes");
@@ -312,90 +329,90 @@ function renderizar(){
 
   [...emprestimos]
 
-  .sort((a,b)=>{
+    .sort((a, b) => {
 
-    const diasA =
-      diasRestantes(a.vencimento);
+      const diasA =
+        diasRestantes(a.vencimento);
 
-    const diasB =
-      diasRestantes(b.vencimento);
+      const diasB =
+        diasRestantes(b.vencimento);
 
-    // PAGOS ficam por último
+      // PAGOS ficam por último
 
-    if(a.pago && !b.pago) return 1;
-    if(!a.pago && b.pago) return -1;
+      if (a.pago && !b.pago) return 1;
+      if (!a.pago && b.pago) return -1;
 
-    // ATRASADOS primeiro
+      // ATRASADOS primeiro
 
-    if(diasA < 0 && diasB >= 0) return -1;
-    if(diasA >= 0 && diasB < 0) return 1;
+      if (diasA < 0 && diasB >= 0) return -1;
+      if (diasA >= 0 && diasB < 0) return 1;
 
-    // VENCE HOJE antes dos demais
+      // VENCE HOJE antes dos demais
 
-    if(diasA === 0 && diasB > 0) return -1;
-    if(diasA > 0 && diasB === 0) return 1;
+      if (diasA === 0 && diasB > 0) return -1;
+      if (diasA > 0 && diasB === 0) return 1;
 
-    // MAIS RECENTES primeiro
+      // MAIS RECENTES primeiro
 
-    return new Date(b.data) - new Date(a.data);
+      return new Date(b.data) - new Date(a.data);
 
-  })
+    })
 
-  .forEach((e,revIndex)=>{
+    .forEach((e, revIndex) => {
 
-    // CORREÇÃO PARA DADOS ANTIGOS
+      // CORREÇÃO PARA DADOS ANTIGOS
 
-    if(!e.historicoJuros){
+      if (!e.historicoJuros) {
 
-      e.historicoJuros = [];
-    }
+        e.historicoJuros = [];
+      }
 
-    const index =
-      emprestimos.indexOf(e);
+      const index =
+        emprestimos.indexOf(e);
 
-    const dias =
-      diasRestantes(e.vencimento);
+      const dias =
+        diasRestantes(e.vencimento);
 
-    let classe = "";
+      let classe = "";
 
-    let status = "";
+      let status = "";
 
-    if(e.pago){
+      if (e.pago) {
 
-      classe = "pago";
+        classe = "pago";
 
-      status =
-        `<div class="status emDia">
+        status =
+          `<div class="status emDia">
           ✅ Pago
         </div>`;
 
-    }else if(dias === 0){
+      } else if (dias === 0) {
 
-      classe = "vencendoHoje";
+        classe = "vencendoHoje";
 
-      status =
-        `<div class="status atrasado">
+        status =
+          `<div class="status atrasado">
           ⚠️ Vence Hoje
         </div>`;
 
-    }else if(dias < 0){
+      } else if (dias < 0) {
 
-      classe = "vencendoHoje";
+        classe = "vencendoHoje";
 
-      status =
-        `<div class="status atrasado">
+        status =
+          `<div class="status atrasado">
           🔴 Atrasado ${Math.abs(dias)} dia(s)
         </div>`;
 
-    }else{
+      } else {
 
-      status =
-        `<div class="status emDia">
+        status =
+          `<div class="status emDia">
           🟢 ${dias} dia(s) restantes
         </div>`;
-    }
+      }
 
-    lista.innerHTML += `
+      lista.innerHTML += `
 
       <div class="cliente ${classe}">
 
@@ -476,63 +493,63 @@ function renderizar(){
       </div>
 
     `;
-  });
+    });
 
   atualizarResumo();
 }
 
 function fazerBackup() {
 
-    const dados = {
+  const dados = {
 
-        emprestimos: emprestimos
+    emprestimos: emprestimos
 
-    };
+  };
 
-    const blob = new Blob(
+  const blob = new Blob(
 
-        [JSON.stringify(dados, null, 2)],
+    [JSON.stringify(dados, null, 2)],
 
-        { type: "application/json" }
+    { type: "application/json" }
 
-    );
+  );
 
-    const a =
-        document.createElement("a");
+  const a =
+    document.createElement("a");
 
-    a.href =
-        URL.createObjectURL(blob);
+  a.href =
+    URL.createObjectURL(blob);
 
-    a.download =
-        "backup_emprestimos.json";
+  a.download =
+    "backup_emprestimos.json";
 
-    a.click();
+  a.click();
 }
 function restaurarBackup(event) {
 
-    const arquivo =
-        event.target.files[0];
+  const arquivo =
+    event.target.files[0];
 
-    if (!arquivo) return;
+  if (!arquivo) return;
 
-    const reader = new FileReader();
+  const reader = new FileReader();
 
-    reader.onload = function (e) {
+  reader.onload = function (e) {
 
-        const dados =
-            JSON.parse(e.target.result);
+    const dados =
+      JSON.parse(e.target.result);
 
-        emprestimos =
-            dados.emprestimos || [];
+    emprestimos =
+      dados.emprestimos || [];
 
-        salvarDados();
+    salvarDados();
 
-        renderizar();
+    renderizar();
 
-        alert("Backup restaurado!");
-    };
+    alert("Backup restaurado!");
+  };
 
-    reader.readAsText(arquivo);
+  reader.readAsText(arquivo);
 }
 /*
 function pagarJuros(index){
@@ -547,11 +564,11 @@ function pagarJuros(index){
   }
 */
 
-function pagarJuros(index){
+function pagarJuros(index) {
 
-  if(!confirm(
+  if (!confirm(
     "Confirmar pagamento dos juros?"
-  )){
+  )) {
     return;
   }
 
@@ -561,7 +578,7 @@ function pagarJuros(index){
 
   // verifica se já foi pago
 
-  if(e.pago){
+  if (e.pago) {
 
     alert("Empréstimo já quitado");
 
@@ -570,7 +587,7 @@ function pagarJuros(index){
 
   // cria histórico caso não exista
 
-  if(!e.historicoJuros){
+  if (!e.historicoJuros) {
 
     e.historicoJuros = [];
   }
@@ -587,9 +604,9 @@ function pagarJuros(index){
 
   e.historicoJuros.push({
 
-    data:new Date().toLocaleString(),
+    data: new Date().toLocaleString(),
 
-    valor:valorJuros
+    valor: valorJuros
 
   });
 
@@ -599,20 +616,15 @@ function pagarJuros(index){
 
   // pega vencimento atual
 
-  let novaData =
-    new Date(e.vencimento);
-
-  // adiciona mais dias
-
-  novaData.setDate(
-
-    novaData.getDate() +
-
-    parseInt(e.periodo)
-
+  let novaData = prompt(
+    "Nova data de vencimento:",
+    e.vencimento
   );
 
-  // salva novo vencimento
+  if (!novaData) {
+
+    return;
+  }
 
   e.vencimento = novaData;
 
@@ -626,12 +638,12 @@ function pagarJuros(index){
 
     "Novo vencimento: " +
 
-    formatarData(novaData)
+    novaData
 
   );
 }
 
-function toggleFormulario(){
+function toggleFormulario() {
 
   const form =
     document.getElementById("formulario");
@@ -639,14 +651,14 @@ function toggleFormulario(){
   const btn =
     document.getElementById("btnNovo");
 
-  if(form.style.display === "none"){
+  if (form.style.display === "none") {
 
     form.style.display = "block";
 
     btn.innerText =
       "Fechar Formulário";
 
-  }else{
+  } else {
 
     form.style.display = "none";
 
@@ -658,15 +670,15 @@ function toggleFormulario(){
 const SENHA_APP = "1234";
 
 
-function enterLogin(event){
+function enterLogin(event) {
 
-  if(event.key === "Enter"){
+  if (event.key === "Enter") {
 
     fazerLogin();
   }
 }
 
-function fazerLogin(){
+function fazerLogin() {
 
   const senha =
     document.getElementById("senhaLogin").value;
@@ -678,9 +690,9 @@ function fazerLogin(){
 
   // PRIMEIRO ACESSO
 
-  if(!senhaSalva){
+  if (!senhaSalva) {
 
-    if(senha.length < 4){
+    if (senha.length < 4) {
 
       alert(
         "Crie uma senha com pelo menos 4 números"
@@ -703,17 +715,17 @@ function fazerLogin(){
 
   // LOGIN NORMAL
 
-  if(senha === senhaSalva){
+  if (senha === senhaSalva) {
 
     abrirSistema();
 
-  }else{
+  } else {
 
     alert("Senha incorreta");
   }
 }
 
-function abrirSistema(){
+function abrirSistema() {
 
   document
     .getElementById("loginTela")
@@ -724,9 +736,9 @@ function abrirSistema(){
     .style.display = "block";
 }
 
-function enterLogin(event){
+function enterLogin(event) {
 
-  if(event.key === "Enter"){
+  if (event.key === "Enter") {
 
     fazerLogin();
   }
@@ -735,7 +747,7 @@ function enterLogin(event){
 const senhaExiste =
   localStorage.getItem("senhaSistema");
 
-if(!senhaExiste){
+if (!senhaExiste) {
 
   document
     .getElementById("tituloLogin")
@@ -743,7 +755,7 @@ if(!senhaExiste){
     "🔑 Crie sua senha";
 }
 
-function limparDados(){
+function limparDados() {
 
   const senha =
     prompt(
@@ -755,16 +767,16 @@ function limparDados(){
   const senhaSalva =
     localStorage.getItem("senhaSistema");
 
-  if(senha !== senhaSalva){
+  if (senha !== senhaSalva) {
 
     alert("Senha incorreta");
 
     return;
   }
 
-  if(!confirm(
+  if (!confirm(
     "TODOS os empréstimos serão apagados.\n\nContinuar?"
-  )){
+  )) {
     return;
   }
 
