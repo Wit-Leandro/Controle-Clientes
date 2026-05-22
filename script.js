@@ -54,21 +54,41 @@ function calcularVencimento(data, dias) {
   return nova;
 }
 
-function diasRestantes(data) {
+function diasRestantes(dataVencimento){
+
+  if(!dataVencimento) return 0;
+
+  // separa yyyy-mm-dd
+
+  const partes =
+    dataVencimento.split("-");
+
+  // cria data LOCAL sem UTC
+
+  const vencimento = new Date(
+
+    partes[0],          // ano
+    partes[1] - 1,      // mês
+    partes[2]           // dia
+
+  );
 
   const hoje = new Date();
 
-  hoje.setHours(0, 0, 0, 0);
+  // zera horário
 
-  const venc = new Date(data);
+  hoje.setHours(0,0,0,0);
 
-  venc.setHours(0, 0, 0, 0);
+  vencimento.setHours(0,0,0,0);
 
   const diff =
-    venc - hoje;
+
+    vencimento - hoje;
 
   return Math.ceil(
-    diff / (1000 * 60 * 60 * 24)
+
+    diff / (1000*60*60*24)
+
   );
 }
 
@@ -111,6 +131,9 @@ function atualizarResumo() {
 /* ================= ADICIONAR ================= */
 
 function adicionarEmprestimo(){
+
+  var formu =
+    document.getElementById("formulario");
 
   let nome =
     document.getElementById("nome").value;
@@ -192,6 +215,8 @@ function adicionarEmprestimo(){
   document.getElementById("vencimento").value = "";
 
   document.getElementById("garantia").value = "";
+
+  formu.style.display = "none";
 }
 
 
@@ -446,11 +471,6 @@ function renderizar() {
         </div>
 
         <div class="info">
-          ⏳ Prazo:
-          ${e.periodo} dias
-        </div>
-
-        <div class="info">
           📆 Vencimento:
           ${formatarData(e.vencimento)}
         </div>
@@ -648,24 +668,16 @@ function toggleFormulario() {
   const form =
     document.getElementById("formulario");
 
-  const btn =
-    document.getElementById("btnNovo");
-
   if (form.style.display === "none") {
 
     form.style.display = "block";
-
-    btn.innerText =
-      "Fechar Formulário";
 
   } else {
 
     form.style.display = "none";
 
-    btn.innerText =
-      "+ Novo Empréstimo";
   }
-  adicionarEmprestimo()
+
 }
 const SENHA_APP = "1234";
 
@@ -799,6 +811,34 @@ function limparDados() {
   atualizarResumo();
 
   alert("Dados apagados com sucesso!");
+}
+
+function formatarData(data){
+
+  if(!data) return "";
+
+  // formato vindo do input date
+  // yyyy-mm-dd
+
+  if(data.includes("-")){
+
+    const partes = data.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+  // fallback padrão
+
+  return data;
+}
+
+function formatarInputData(data){
+
+  if(!data) return "";
+
+  const partes = data.split("/");
+
+  return `${partes[2]}-${partes[1]}-${partes[0]}`;
 }
 /* ================= INIT ================= */
 
